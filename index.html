@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuatAgensy — разработка Telegram-ботов</title>
+  <style>
+    :root {
+      --bg-body: #f4f5f7;
+      --bg-card: #ffffff;
+      --text-main: #1a1a1a;
+      --text-secondary: #555;
+      --border: #ccc;
+      --accent-dark: #222;
+      --shadow: rgba(0,0,0,0.12);
+    }
+{ margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Лоадер */
+#loader-screen {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #fff;
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999; transition: opacity 0.5s ease;
+}
+.loader-container { position: relative; width: 200px; height: 200px; }
+.loading-circle {
+  position: absolute; inset: 0;
+  border: 4px solid #333; border-top-color: transparent;
+  border-radius: 50%; animation: spin 2s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.crystal-svg {
+  position: absolute; inset: 0; width: 160px; height: 160px;
+  margin: auto; filter: drop-shadow(0 0 12px rgba(0,0,0,0.2));
+}
+
+/* Основной контент */
+#main-content { padding: 60px 20px; padding-bottom: 240px; }
+.container { max-width: 900px; margin: 0 auto; }
+
+h2 {
+  font-size: 30px;
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
+  text-align: center;
+  color: var(--text-main);
+}
+
+/* Карточка «О нас» */
+.about-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 30px;
+  margin: 30px 0;
+  box-shadow: 0 8px 24px var(--shadow);
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.about-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.about-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px var(--shadow);
+}
+.about-card h2 {
+  font-size: 26px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--text-main);
+  text-align: center;
+}
+p { font-size: 17px; margin-bottom: 18px; color: var(--text-secondary); }
+a { color: var(--accent-dark); text-decoration: none; transition: opacity 0.3s; }
+a:hover { opacity: 0.6; }
+
+/* FAQ */
+#faq { margin-top: 50px; }
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px var(--shadow);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(15px);
+}
+.faq-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.faq-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px var(--shadow);
+  border-color: #333;
+}
+.faq-question {
+  font-weight: 700;
+  font-size: 19px;
+  margin-bottom: 10px;
+  color: var(--text-main);
+}
+.faq-answer { font-size: 16px; color: var(--text-secondary); }
+
+/* Кнопка «вниз» */
+#scroll-down-btn {
+  position: fixed; bottom: 70px; left: 50%;
+  transform: translateX(-50%);
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  display: flex; justify-content: center; align-items: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  z-index: 1001;
+}
+#scroll-down-btn:hover {
+  transform: translateX(-50%) translateY(-6px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+#scroll-down-btn svg { width: 28px; height: 28px; fill: #fff; }
+
+/* Футер */
+#footer-panel {
+  background-color: #fff;
+  padding: 50px 20px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+}
+.footer-text {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+}
+.footer-link {
+  color: var(--accent-dark);
+  text-decoration: none;
+  margin: 0 10px;
+  transition: opacity 0.3s;
+}
+.footer-link:hover { opacity: 0.6; }
+
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Адаптив */
+@media(max-width: 768px) {
+  h2 { font-size: 26px; }
+  .about-card, .faq-item { padding: 24px; }
+  #scroll-down-btn { bottom: 50px; width: 56px; height: 56px; }
+  #footer-panel { padding: 32px 16px; }
+}
+
+  </style>
+
+</head>
+<body>  <!-- Лоадер -->
+  <div id="loader-screen">
+    <div class="loader-container">
+      <div class="loading-circle"></div>
+      <svg class="crystal-svg" viewBox="0 0 612 612" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)">
+        <g><g><g><g>
+          <path d="M306.829,540.204l285.196-349.655L503.278,66.307H110.379L21.612,190.549L306.829,540.204L306.829,540.204z M611.461,196.961L314.3,561.276c-0.42,0.54-0.898,1.02-1.459,1.459c-4.095,3.314-10.126,2.696-13.442-1.398L2.177,196.961 c-2.637-3.256-2.917-7.99-0.379-11.565l95.458-133.63c1.698-2.776,4.734-4.654,8.229-4.654h402.708v0.04 c2.995,0.02,5.933,1.398,7.79,4.015l95.737,134.049L611.461,196.961z"/>
+        </g>
+        <path d="M373.924,181.341c5.293,0,9.587,4.295,9.587,9.588s-4.294,9.588-9.587,9.588H9.588c-5.293,0-9.588-4.294-9.588-9.588 c0-5.293,4.294-9.588,9.588-9.588H373.924z"/>
+        <path d="M602.412,181.341c5.293,0,9.588,4.295,9.588,9.588s-4.295,9.588-9.588,9.588h-36.713c-5.293,0-9.588-4.294-9.588-9.588 c0-5.293,4.295-9.588,9.588-9.588H602.412z"/>
+        <path d="M96.597,60.255c-1.958-4.894,0.439-10.467,5.333-12.424c4.894-1.958,10.467,0.439,12.424,5.313l201.343,498.604 c1.958,4.895-0.439,10.467-5.313,12.424c-4.894,1.958-10.467-0.419-12.444-5.312L96.597,60.255z"/>
+        <path d="M410.237,273.683c1.957-4.894,7.55-7.291,12.424-5.333c4.894,1.958,7.291,7.55,5.312,12.444L315.697,558.88 c-1.957,4.895-7.55,7.291-12.424,5.313c-4.894-1.958-7.291-7.551-5.333-12.425L410.237,273.683z"/>
+        <path d="M499.283,53.145c1.958-4.894,7.551-7.271,12.443-5.313c4.894,1.958,7.291,7.551,5.313,12.444l-15.48,38.351 c-1.957,4.894-7.55,7.291-12.424,5.313c-4.894-1.957-7.291-7.55-5.312-12.424L499.283,53.145z"/>
+        <path d="M169.524,197.92c-3.875,3.595-9.927,3.375-13.523-0.479c-3.595-3.855-3.375-9.927,0.5-13.503L300.338,49.709 c3.855-3.596,9.927-3.376,13.502,0.479c3.596,3.855,3.376,9.927-0.479,13.502L169.524,197.92z"/>
+        <path d="M409.179,139.154c3.854,3.595,4.074,9.648,0.479,13.503c-3.597,3.855-9.648,4.075-13.503,0.479L300.317,63.69 c-3.855-3.595-4.075-9.647-0.479-13.503c3.595-3.855,9.647-4.075,13.503-0.479L409.179,139.154z"/>
+        <path d="M478.37,129.107l17.856,35.435l35.436,17.857c4.714,2.357,6.592,8.129,4.234,12.843 c-0.959,1.898-2.478,3.336-4.234,4.235l-35.436,17.857l-17.856,35.435c-2.356,4.714-8.13,6.612-12.844,4.235 c-1.897-0.959-3.335-2.477-4.234-4.235l-17.837-35.435l-35.437-17.857c-4.714-2.377-6.591-8.13-4.233-12.844 c0.959-1.897,2.478-3.335,4.233-4.234l35.437-17.857l17.837-35.435c2.377-4.714,8.13-6.591,12.844-4.234 C476.033,125.812,477.472,127.33,478.37,129.107L478.37,129.107z M480.567,175.967l-10.728-21.293l-10.726,21.293 c-0.899,1.758-2.338,3.276-4.235,4.235l-21.312,10.726l21.312,10.747c1.758,0.899,3.276,2.337,4.235,4.234l10.726,21.313 l10.728-21.313c0.898-1.758,2.337-3.276,4.233-4.234l21.313-10.747l-21.313-10.726 C483.044,179.303,481.526,177.865,480.567,175.967z"/>
+      </g></g></g></g>
+    </svg>
+  </div>
+</div><!-- Основной контент -->
+<div id="main-content">
+  <div class="container">
+    <!-- Карточка «О нас» -->
+    <section class="about-card reveal">
+      <h2>О нас</h2>
+      <p>QuatAgensy разрабатывает Telegram‑ботов любой сложности на базе языка программирования Python с использованием библиотеки Aiogram.</p>
+      <p>Мы применяем современные базы данных: SQLite, PostgreSQL и Redis — в зависимости от требований проекта.</p>
+      <p>Для создания и разработки вашего Telegram‑бота вы можете обратиться к нам по электронной почте <a href="mailto:probell611@gmail.com" class="contact-links">probell611@gmail.com</a> или в Telegram: <a href="[https://t.me/Quat_agensy](https://t.me/Quat_agensy)" target="_blank" class="contact-links">@Quat_agensy</a>.</p>
+    </section>
+<!-- FAQ -->
+<section id="faq">
+  <h2>FAQ Часто задаваемые вопросы</h2>  <div class="faq-item reveal">
+    <div class="faq-question">Как долго разрабатывается бот?</div>
+    <div class="faq-answer">Срок разработки зависит от сложности проекта. Обычно это занимает от нескольких дней до нескольких недель.</div>
+  </div>  <div class="faq-item reveal">
+    <div class="faq-question">Можно ли заказать индивидуальный дизайн?</div>
+    <div class="faq-answer">Да, мы готовы реализовать уникальный дизайн и функционал по вашему желанию.</div>
+  </div>  <div class="faq-item reveal">
+    <div class="faq-question">Какие базы данных вы используете?</div>
+    <div class="faq-answer">В зависимости от задач проекта мы используем SQLite, PostgreSQL или Redis.</div>
+  </div>  <div class="faq-item reveal">
+    <div class="faq-question">Как со мной связаться?</div>
+    <div class="faq-answer">Напишите на почту <a href="mailto:probell611@gmail.com" class="contact-links">probell611@gmail.com</a> либо в Telegram <a href="[https://t.me/Quat_agensy](https://t.me/Quat_agensy)" target="_blank" class="contact-links">@Quat_agensy</a> — мы с радостью ответим на все вопросы.</div>
+  </div>
+</section>  </div>
+</div><!-- Футер -->
+<div id="footer-panel">
+  <div class="footer-text">
+    QUAT Agensy - Все права защищены © 2026<br />
+    <a href="terms.html" class="footer-link" target="_self">Условия пользования</a> | 
+    <a href="privacy.html" class="footer-link" target="_self">Политика конфиденциальности</a><br />
+    QUAT Agensy — специализированная площадка для разработки Telegram‑ботов.
+  </div>
+</div><script>
+  // Удаление лоадера
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('loader-screen');
+    setTimeout(() => {
+      loader.style.opacity = '0';
+      setTimeout(() => { loader.style.display='none'; }, 300);
+    }, 1000);
+  });
+  // Скролл по кнопке
+  const scrollBtn = document.getElementById('scroll-down-btn');
+  if (scrollBtn) {
+    scrollBtn.onclick = () => {
+      document.querySelector('#faq').scrollIntoView({ behavior: 'smooth' });
+    };
+  }
+
+  // Анимация появления элементов
+  const revealEls = document.querySelectorAll('.reveal, .faq-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
